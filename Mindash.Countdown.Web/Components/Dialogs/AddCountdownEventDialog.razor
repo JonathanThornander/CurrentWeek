@@ -1,0 +1,61 @@
+﻿@inject ISnackbar Snackbar
+@inject ICountDownService CountDownService
+
+@using Mindash.Countdown.Web.Data.DTOS;
+@using Mindash.Countdown.Web.Services
+
+
+<MudDialog>
+    <DialogContent>
+        <MudTextField Value="@TitleEntry" @bind-Text="@TitleEntry" Label="Title" ReadOnly="false" />
+        <MudDatePicker @bind-Date="@DateEntry" Label="Occures" ReadOnly="false" />
+        <MudColorPicker Value="@HexColorEntry" @bind-Text="@HexColorEntry" Label="Color" ReadOnly="false" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Success" OnClick="UpdateEvent">Add</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    public string TitleEntry { get; set; } = string.Empty;
+
+    public string HexColorEntry { get; set; } = "#9E02F2";
+
+    public DateTime? DateEntry { get; set; } = DateTime.UtcNow;
+
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    private async Task UpdateEvent()
+    {
+        try
+        {
+            if (DateEntry == null)
+            {
+                Snackbar.Add("Date must be set", Severity.Error);
+                return;
+            }
+
+            var date = ((DateTime)DateEntry).ToUniversalTime();
+
+            var countDownEvent = new CountdownEvent(TitleEntry, date, HexColorEntry);
+            await CountDownService.CreateNew(countDownEvent);
+            Snackbar.Add("Created!", Severity.Success);
+
+            MudDialog.Close();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+
+            MudDialog.Close();
+        }
+    }
+}

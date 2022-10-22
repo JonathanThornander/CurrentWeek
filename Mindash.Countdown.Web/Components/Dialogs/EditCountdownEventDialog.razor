@@ -1,0 +1,68 @@
+﻿@inject ISnackbar Snackbar
+@inject ICountDownService CountDownService
+
+@using Mindash.Countdown.Web.Data.DTOS;
+@using Mindash.Countdown.Web.Services
+
+
+<MudDialog>
+    <DialogContent>
+        <MudTextField Value="@CountdownEvent.ID" Label="ID" ReadOnly="true" />
+        <MudTextField Value="@TitleEntry" @bind-Text="@TitleEntry" Label="Title" ReadOnly="false" />
+        <MudDatePicker @bind-Date="@DateEntry" Label="Occures" ReadOnly="false" />
+        <MudColorPicker Value="@HexColorEntry" @bind-Text="@HexColorEntry" Label="Color" ReadOnly="false" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Success" OnClick="UpdateEvent">Update</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+
+    public string TitleEntry { get; set; }
+
+    public string HexColorEntry { get; set; }
+
+    public DateTime? DateEntry { get; set; }
+
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public CountdownEvent CountdownEvent { get; set; }
+
+    protected override void OnInitialized()
+    {
+        TitleEntry = CountdownEvent.Title;
+        HexColorEntry = CountdownEvent.HexColor;
+        DateEntry = CountdownEvent.DateTime;
+    }
+
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    private async Task UpdateEvent()
+    {
+        try
+        {
+            CountdownEvent.Title = TitleEntry;
+            CountdownEvent.HexColor = HexColorEntry;
+            CountdownEvent.DateTime = DateEntry ?? CountdownEvent.DateTime;
+
+            await CountDownService.Update(CountdownEvent);
+            Snackbar.Add("Updated!", Severity.Success);
+
+            MudDialog.Close();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+
+            MudDialog.Close();
+        }
+    }
+}

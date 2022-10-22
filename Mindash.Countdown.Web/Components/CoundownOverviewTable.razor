@@ -1,0 +1,83 @@
+﻿@using Mindash.Countdown.Web.Components.Dialogs
+@using Mindash.Countdown.Web.Data.DTOS
+@using Mindash.Countdown.Web.Services
+
+@inject ICountDownService CountDownService
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+
+<MudTable Items="@DateModels">
+    <HeaderContent>
+        <MudTh>Title</MudTh>
+        <MudTh>Date</MudTh>
+        <MudTh>Hex Color</MudTh>
+        <MudTh>Actions</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Title">@context.Title</MudTd>
+        <MudTd DataLabel="Date">@context.DateTime.ToLocalTime()</MudTd>
+        <MudTd DataLabel="Hex Color">@context.HexColor</MudTd>
+        <MudTd DataLabel="">
+            <MudIconButton @onclick="@(()=>OpenEdit(@context))" Color="Color.Primary" Icon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small" />
+            <MudIconButton @onclick="@(()=>DeleteEvent(@context))" Color="Color.Secondary" Icon="@Icons.Material.Filled.Delete" Size="Size.Small" IconSize="Size.Small" />
+        </MudTd>
+    </RowTemplate>
+</MudTable>
+
+<MudButton Variant="Variant.Filled" DisableElevation="true" Color="Color.Primary" FullWidth="true" OnClick="@NewCountdownEvent">Create New</MudButton>
+
+@code {
+    public IEnumerable<CountdownEvent> DateModels { get; set; } = Enumerable.Empty<CountdownEvent>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadEventsAsync();
+    }
+
+    private async Task LoadEventsAsync()
+    {
+        try
+        {
+            DateModels = await CountDownService.GetAllAsync();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message);
+            throw;
+        }
+    }
+
+    private async Task NewCountdownEvent(MouseEventArgs args)
+    {
+        var dialog = DialogService.Show<AddCountdownEventDialog>("Add event");
+        _ = await dialog.Result;
+
+        await LoadEventsAsync();
+    }
+
+    private async Task OpenEdit(CountdownEvent countdownEvent)
+    {
+        var parameters = new DialogParameters { ["CountdownEvent"] = countdownEvent };
+        var dialog = DialogService.Show<EditCountdownEventDialog>("Edit event", parameters);
+
+        _ = await dialog.Result;
+        await LoadEventsAsync();
+    }
+
+    private async Task DeleteEvent(CountdownEvent countdownEvent)
+    {
+        try
+        {
+            await CountDownService.DeleteByIdAsync(countdownEvent.ID);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message);
+        }
+        finally
+        {
+            await LoadEventsAsync();
+        }
+
+    }
+}
