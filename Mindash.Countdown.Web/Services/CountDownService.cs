@@ -7,12 +7,15 @@ namespace Mindash.CurrentWeek.Web.Services
 {
     public class CurrentWeekService : ICurrentWeekService
     {
-        public int GetCurrentWeek()
+        public CurrentTimeViewModel GetCurrentWeek()
         {
             DateTimeFormatInfo dfi = DateTimeFormatInfo.CurrentInfo;
             Calendar cal = dfi.Calendar;
 
-            return cal.GetWeekOfYear(DateTime.Now, dfi.CalendarWeekRule, DayOfWeek.Monday);
+            var localNow = DateTime.Now;
+            var week = cal.GetWeekOfYear(localNow, dfi.CalendarWeekRule, DayOfWeek.Monday);
+
+            return new CurrentTimeViewModel(week, localNow); 
         }
     }
 }

@@ -4,6 +4,6 @@ namespace Mindash.CurrentWeek.Web.Services
 {
     public interface ICurrentWeekService
     {
-        public int GetCurrentWeek();
+        public CurrentTimeViewModel GetCurrentWeek();
     }
 }

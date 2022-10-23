@@ -1,5 +1,6 @@
 ﻿@page "/"
 
+@using Mindash.CurrentWeek.Web.Data.DTOS
 @using Mindash.CurrentWeek.Web.Services
 @using System.Threading
 
@@ -25,10 +26,13 @@
     }
 </style>
 
-<div class="area">
+<div class="gradient-bg" />
+
+<div>
     <div class="center">
-        <h1 style="font-size: 150pt;">@CurrentWeek</h1>
-        <h2 style="font-size: 30pt;">@DateDescription</h2>
+        <h1 style="font-size: 150pt;">@CurrentTime.CurrentWeek</h1>
+        <h2 style="font-size: 30pt;">@CurrentTime.DateString</h2>
+        <h2 style="font-size: 30pt;">@CurrentTime.TimeString</h2>
     </div>
     <ul class="circles">
         <li></li>
@@ -47,10 +51,10 @@
 
 @code
 {
-    public int CurrentWeek { get; set; } = 0;
+    public CurrentTimeViewModel CurrentTime { get; set; } = new LocadingCurrentTimeViewModel();
 
     string DateDescription { get; set; } = "";
-    Timer aTimer; 
+    Timer aTimer;
 
     protected override void OnInitialized()
     {
@@ -59,8 +63,7 @@
 
     private void Tick(object _)
     {
-        DateDescription = DateTime.Now.ToLongTimeString();
-        CurrentWeek = CurrentWeekService.GetCurrentWeek();
+        CurrentTime = CurrentWeekService.GetCurrentWeek();
 
         InvokeAsync(StateHasChanged);
     }
