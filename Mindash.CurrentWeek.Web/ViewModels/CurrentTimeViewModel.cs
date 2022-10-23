@@ -5,10 +5,13 @@ namespace Mindash.CurrentWeek.Web.Data.DTOS
 {
     public class CurrentTimeViewModel
     {
-        public CurrentTimeViewModel(int currentWeek, DateTime dateTime)
+        private readonly CultureInfo _cultureInfo;
+
+        public CurrentTimeViewModel(int currentWeek, DateTime dateTime, CultureInfo cultureInfo)
         {
             CurrentWeek = currentWeek;
             DateTime = dateTime;
+            _cultureInfo = cultureInfo;
         }
 
         public virtual int CurrentWeek { get; set; }
@@ -22,20 +25,18 @@ namespace Mindash.CurrentWeek.Web.Data.DTOS
 
         private string GetDateString()
         {
-            CultureInfo ci = CultureInfo.CurrentCulture;
-            return DateTime.ToString(ci.DateTimeFormat.LongDatePattern, ci);
+            return DateTime.ToString(_cultureInfo.DateTimeFormat.LongDatePattern, _cultureInfo);
         }
 
         private string GetTimeString()
         {
-            CultureInfo ci = CultureInfo.CurrentCulture;
-            return DateTime.ToString(ci.DateTimeFormat.LongTimePattern, ci);
+            return DateTime.ToString(_cultureInfo.DateTimeFormat.LongTimePattern, _cultureInfo);
         }
     }
 
     public class LocadingCurrentTimeViewModel : CurrentTimeViewModel
     {
-        public LocadingCurrentTimeViewModel() : base(0, DateTime.MinValue)
+        public LocadingCurrentTimeViewModel() : base(0, DateTime.MinValue, CultureInfo.CurrentCulture)
         {
         }
     }
