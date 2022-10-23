@@ -6,16 +6,16 @@ EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["Mindash.Countdown.Web/Mindash.Countdown.Web.csproj", "Mindash.Countdown.Web/"]
-RUN dotnet restore "Mindash.Countdown.Web/Mindash.Countdown.Web.csproj"
+COPY ["Mindash.CurrentWeek.Web/Mindash.CurrentWeek.Web.csproj", "Mindash.CurrentWeek.Web/"]
+RUN dotnet restore "Mindash.CurrentWeek.Web/Mindash.CurrentWeek.Web.csproj"
 COPY . .
-WORKDIR "/src/Mindash.Countdown.Web"
-RUN dotnet build "Mindash.Countdown.Web.csproj" -c Release -o /app/build
+WORKDIR "/src/Mindash.CurrentWeek.Web"
+RUN dotnet build "Mindash.CurrentWeek.Web.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "Mindash.Countdown.Web.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "Mindash.CurrentWeek.Web.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Mindash.Countdown.Web.dll"]
+ENTRYPOINT ["dotnet", "Mindash.CurrentWeek.Web.dll"]

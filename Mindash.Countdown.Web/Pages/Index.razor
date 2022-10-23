@@ -1,31 +1,34 @@
 ﻿@page "/"
 
-@using Mindash.Countdown.Web.Models
-@using Mindash.Countdown.Web.Services
-@inject ICountDownService CountDownService
+@using Mindash.CurrentWeek.Web.Services
+@using System.Threading
+
+@implements IDisposable
+
+@inject ICurrentWeekService CurrentWeekService
 @inject NavigationManager NavManager
 
 <PageTitle>Index</PageTitle>
 
 <style>
     body {
-        background-color: @CountDownViewModel.HexColor;
+        background-color: #1B181F;
         color: white;
     }
 
 
     .area {
-        background: @CountDownViewModel.HexColor;
-        background: -webkit-linear-gradient(to left, #8f94fb, @CountDownViewModel.HexColor);
+        background: #310359;
+        background: -webkit-linear-gradient(to left, #8f94fb, #310359);
         width: 100%;
         height: 100vh;
     }
 </style>
 
-<div class="area" @onclick="OpenEditPage">
+<div class="area">
     <div class="center">
-        <h1 style="font-size: 100pt;">@CountDownViewModel.InfoText</h1>
-        <h1 style="font-size: 30pt;">@CountDownViewModel.Title</h1>
+        <h1 style="font-size: 150pt;">@CurrentWeek</h1>
+        <h2 style="font-size: 30pt;">@DateDescription</h2>
     </div>
     <ul class="circles">
         <li></li>
@@ -44,24 +47,26 @@
 
 @code
 {
-    public CountDownViewModel CountDownViewModel { get; set; } = new LoadingCountDownViewModel();
+    public int CurrentWeek { get; set; } = 0;
 
-    protected override async Task OnInitializedAsync()
+    string DateDescription { get; set; } = "";
+    Timer aTimer; 
+
+    protected override void OnInitialized()
     {
-        var countDown = await CountDownService.GetCountDownAsync();
-
-        if (countDown != null)
-        {
-            CountDownViewModel = new CountDownViewModel(countDown.Title, countDown.HexColor, countDown.DateTime);
-        }
-        else
-        {
-            CountDownViewModel = new EmptyCountDownViewModel();
-        }
+        aTimer = new Timer(Tick, null, 0, 1000);
     }
 
-    private void OpenEditPage(MouseEventArgs args)
+    private void Tick(object _)
     {
-        NavManager.NavigateTo("/edit");
+        DateDescription = DateTime.Now.ToLongTimeString();
+        CurrentWeek = CurrentWeekService.GetCurrentWeek();
+
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        aTimer?.Dispose();
     }
 }

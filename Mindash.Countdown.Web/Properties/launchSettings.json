@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "Mindash.Countdown.Web": {
+    "Mindash.CurrentWeek.Web": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {

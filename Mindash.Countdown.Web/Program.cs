@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
-using Mindash.Countdown.Web.Data;
-using Mindash.Countdown.Web.Services;
+using Mindash.CurrentWeek.Web.Data;
+using Mindash.CurrentWeek.Web.Services;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,8 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddMudServices();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddDbContext<CountDownDBContext>();
-builder.Services.AddScoped<ICountDownService, CountDownService>();
+builder.Services.AddScoped<ICurrentWeekService, CurrentWeekService>();
 
 var app = builder.Build();
 

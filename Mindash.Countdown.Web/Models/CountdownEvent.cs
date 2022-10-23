@@ -1,13 +1,13 @@
-﻿namespace Mindash.Countdown.Web.Data.DTOS
+﻿namespace Mindash.CurrentWeek.Web.Data.DTOS
 {
-    public class CountdownEvent
+    public class CurrentWeekEvent
     {
-        private CountdownEvent()
+        private CurrentWeekEvent()
         {
 
         }
 
-        public CountdownEvent(string title, DateTime dateTime, string hexColor)
+        public CurrentWeekEvent(string title, DateTime dateTime, string hexColor)
         {
             Title = title;
             DateTime = dateTime;
